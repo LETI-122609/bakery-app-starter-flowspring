@@ -5,9 +5,9 @@
 ## Grupo: LETI-MDH
 
 ### Membros:
-1. **Duarte Sá** - Número: 122609
-2. **Henrique Lopes** - Número: 122634
-3. **Martim Teixeira** - Número: 122636
+1. **Project Mannager: Duarte Sá** - Número: 122609
+2. **Colaborator: Henrique Lopes** - Número: 122634
+3. **Colaborator: Martim Teixeira** - Número: 122636
 
 
 # Running the Project in Development Mode
