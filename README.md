@@ -2,6 +2,13 @@
 
 **This starter is not recommended for new Vaadin Flow applications. Instead, visit [start.vaadin.com](https://start.vaadin.com/) to configure and download a Vaadin project that reflects the current best practices.**
 
+## Grupo: DevSquad
+
+### Membros:
+1. **Duarte** - Número: 122609
+2. **Henrique** - Número: 122634
+3. **Martim** - Número: 122636
+
 
 # Running the Project in Development Mode
 
