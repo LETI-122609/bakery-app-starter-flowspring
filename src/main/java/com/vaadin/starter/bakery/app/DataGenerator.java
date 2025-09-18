@@ -30,20 +30,17 @@ import com.vaadin.starter.bakery.backend.repositories.PickupLocationRepository;
 import com.vaadin.starter.bakery.backend.repositories.ProductRepository;
 import com.vaadin.starter.bakery.backend.repositories.UserRepository;
 
+/**
+ * Generates demo data for the bakery application if the database is empty.
+ * Includes users, products, pickup locations, and orders.
+ */
 @SpringComponent
 public class DataGenerator implements HasLogger {
 
-	private static final String[] FILLING = new String[] { "Strawberry", "Chocolate", "Blueberry", "Raspberry",
-			"Vanilla" };
-	private static final String[] TYPE = new String[] { "Cake", "Pastry", "Tart", "Muffin", "Biscuit", "Bread", "Bagel",
-			"Bun", "Brownie", "Cookie", "Cracker", "Cheese Cake" };
-	private static final String[] FIRST_NAME = new String[] { "Ori", "Amanda", "Octavia", "Laurel", "Lael", "Delilah",
-			"Jason", "Skyler", "Arsenio", "Haley", "Lionel", "Sylvia", "Jessica", "Lester", "Ferdinand", "Elaine",
-			"Griffin", "Kerry", "Dominique" };
-	private static final String[] LAST_NAME = new String[] { "Carter", "Castro", "Rich", "Irwin", "Moore", "Hendricks",
-			"Huber", "Patton", "Wilkinson", "Thornton", "Nunez", "Macias", "Gallegos", "Blevins", "Mejia", "Pickett",
-			"Whitney", "Farmer", "Henry", "Chen", "Macias", "Rowland", "Pierce", "Cortez", "Noble", "Howard", "Nixon",
-			"Mcbride", "Leblanc", "Russell", "Carver", "Benton", "Maldonado", "Lyons" };
+	private static final String[] FILLING = new String[] { "Strawberry", "Chocolate", "Blueberry", "Raspberry", "Vanilla" };
+	private static final String[] TYPE = new String[] { "Cake", "Pastry", "Tart", "Muffin", "Biscuit", "Bread", "Bagel", "Bun", "Brownie", "Cookie", "Cracker", "Cheese Cake" };
+	private static final String[] FIRST_NAME = new String[] { "Ori", "Amanda", "Octavia", "Laurel", "Lael", "Delilah", "Jason", "Skyler", "Arsenio", "Haley", "Lionel", "Sylvia", "Jessica", "Lester", "Ferdinand", "Elaine", "Griffin", "Kerry", "Dominique" };
+	private static final String[] LAST_NAME = new String[] { "Carter", "Castro", "Rich", "Irwin", "Moore", "Hendricks", "Huber", "Patton", "Wilkinson", "Thornton", "Nunez", "Macias", "Gallegos", "Blevins", "Mejia", "Pickett", "Whitney", "Farmer", "Henry", "Chen", "Macias", "Rowland", "Pierce", "Cortez", "Noble", "Howard", "Nixon", "Mcbride", "Leblanc", "Russell", "Carver", "Benton", "Maldonado", "Lyons" };
 
 	private final Random random = new Random(1L);
 
@@ -53,6 +50,15 @@ public class DataGenerator implements HasLogger {
 	private PickupLocationRepository pickupLocationRepository;
 	private PasswordEncoder passwordEncoder;
 
+	/**
+	 * Constructor for DataGenerator.
+	 * 
+	 * @param orderRepository            Order repository
+	 * @param userRepository             User repository
+	 * @param productRepository          Product repository
+	 * @param pickupLocationRepository   Pickup location repository
+	 * @param passwordEncoder            Password encoder for user passwords
+	 */
 	@Autowired
 	public DataGenerator(OrderRepository orderRepository, UserRepository userRepository,
 			ProductRepository productRepository, PickupLocationRepository pickupLocationRepository,
@@ -64,6 +70,10 @@ public class DataGenerator implements HasLogger {
 		this.passwordEncoder = passwordEncoder;
 	}
 
+	/**
+	 * Loads demo data into the database after bean initialization.
+	 * Does nothing if the database already contains users.
+	 */
 	@PostConstruct
 	public void loadData() {
 		if (userRepository.count() != 0L) {
@@ -95,6 +105,11 @@ public class DataGenerator implements HasLogger {
 		getLogger().info("Generated demo data");
 	}
 
+	/**
+	 * Fills a Customer entity with random name and phone details.
+	 * 
+	 * @param customer Customer to fill
+	 */
 	private void fillCustomer(Customer customer) {
 		String first = getRandom(FIRST_NAME);
 		String last = getRandom(LAST_NAME);
@@ -105,10 +120,24 @@ public class DataGenerator implements HasLogger {
 		}
 	}
 
+	/**
+	 * Generates a random phone number string.
+	 * 
+	 * @return Random phone number
+	 */
 	private String getRandomPhone() {
 		return "+1-555-" + String.format("%04d", random.nextInt(10000));
 	}
 
+	/**
+	 * Creates and saves orders for demo data.
+	 * 
+	 * @param orderRepo               Repository for saving orders
+	 * @param productSupplier         Supplier for random products
+	 * @param pickupLocationSupplier  Supplier for random pickup locations
+	 * @param barista                 Barista user
+	 * @param baker                   Baker user
+	 */
 	private void createOrders(OrderRepository orderRepo, Supplier<Product> productSupplier,
 			Supplier<PickupLocation> pickupLocationSupplier, User barista, User baker) {
 		int yearsToInclude = 2;
@@ -124,8 +153,7 @@ public class DataGenerator implements HasLogger {
 		orderRepo.save(order);
 
 		for (LocalDate dueDate = oldestDate; dueDate.isBefore(newestDate); dueDate = dueDate.plusDays(1)) {
-			// Create a slightly upwards trend - everybody wants to be
-			// successful
+			// Create a slightly upwards trend - everybody wants to be successful
 			int relativeYear = dueDate.getYear() - now.getYear() + yearsToInclude;
 			int relativeMonth = relativeYear * 12 + dueDate.getMonthValue();
 			double multiplier = 1.0 + 0.03 * relativeMonth;
@@ -136,6 +164,16 @@ public class DataGenerator implements HasLogger {
 		}
 	}
 
+	/**
+	 * Creates a single demo order.
+	 * 
+	 * @param productSupplier         Supplier for random products
+	 * @param pickupLocationSupplier  Supplier for random pickup locations
+	 * @param barista                 Barista user
+	 * @param baker                   Baker user
+	 * @param dueDate                 Due date for the order
+	 * @return Created Order
+	 */
 	private Order createOrder(Supplier<Product> productSupplier, Supplier<PickupLocation> pickupLocationSupplier,
 			User barista, User baker, LocalDate dueDate) {
 		Order order = new Order(barista);
@@ -172,12 +210,19 @@ public class DataGenerator implements HasLogger {
 		return order;
 	}
 
+	/**
+	 * Creates the history for an order based on its state.
+	 * 
+	 * @param order    The order for which history is created
+	 * @param barista  Barista user
+	 * @param baker    Baker user
+	 * @return List of history items
+	 */
 	private List<HistoryItem> createOrderHistory(Order order, User barista, User baker) {
 		ArrayList<HistoryItem> history = new ArrayList<>();
 		HistoryItem item = new HistoryItem(barista, "Order placed");
 		item.setNewState(OrderState.NEW);
-		LocalDateTime orderPlaced = order.getDueDate().minusDays(random.nextInt(5) + 2L).atTime(random.nextInt(10) + 7,
-				00);
+		LocalDateTime orderPlaced = order.getDueDate().minusDays(random.nextInt(5) + 2L).atTime(random.nextInt(10) + 7, 00);
 		item.setTimestamp(orderPlaced);
 		history.add(item);
 		if (order.getState() == OrderState.CANCELLED) {
@@ -215,6 +260,13 @@ public class DataGenerator implements HasLogger {
 		return history;
 	}
 
+	/**
+	 * Checks if a product is already included in the order items.
+	 * 
+	 * @param items   List of order items
+	 * @param product Product to check
+	 * @return True if product is already included, false otherwise
+	 */
 	private boolean containsProduct(List<OrderItem> items, Product product) {
 		for (OrderItem item : items) {
 			if (item.getProduct() == product) {
@@ -224,12 +276,23 @@ public class DataGenerator implements HasLogger {
 		return false;
 	}
 
+	/**
+	 * Generates a random due time for an order.
+	 * 
+	 * @return Random due time
+	 */
 	private LocalTime getRandomDueTime() {
 		int time = 8 + 4 * random.nextInt(3);
 
 		return LocalTime.of(time, 0);
 	}
 
+	/**
+	 * Randomly selects an order state based on the due date.
+	 * 
+	 * @param due Due date of order
+	 * @return Random order state
+	 */
 	private OrderState getRandomState(LocalDate due) {
 		LocalDate today = LocalDate.now();
 		LocalDate tomorrow = today.plusDays(1);
@@ -270,10 +333,23 @@ public class DataGenerator implements HasLogger {
 		}
 	}
 
+	/**
+	 * Selects a random element from an array.
+	 * 
+	 * @param <T>   Element type
+	 * @param array Array to select from
+	 * @return Random element
+	 */
 	private <T> T getRandom(T[] array) {
 		return array[random.nextInt(array.length)];
 	}
 
+	/**
+	 * Creates and saves pickup locations, returns a supplier for random locations.
+	 * 
+	 * @param pickupLocationRepository Repository for pickup locations
+	 * @return Supplier for random pickup location
+	 */
 	private Supplier<PickupLocation> createPickupLocations(PickupLocationRepository pickupLocationRepository) {
 		List<PickupLocation> pickupLocations = Arrays.asList(
 				pickupLocationRepository.save(createPickupLocation("Store")),
@@ -281,12 +357,25 @@ public class DataGenerator implements HasLogger {
 		return () -> pickupLocations.get(random.nextInt(pickupLocations.size()));
 	}
 
+	/**
+	 * Creates a new pickup location.
+	 * 
+	 * @param name Name of the location
+	 * @return PickupLocation entity
+	 */
 	private PickupLocation createPickupLocation(String name) {
 		PickupLocation store = new PickupLocation();
 		store.setName(name);
 		return store;
 	}
 
+	/**
+	 * Creates and saves products, returns a supplier for random products.
+	 * 
+	 * @param productsRepo   Repository for products
+	 * @param numberOfItems  Number of products to create
+	 * @return Supplier for random product
+	 */
 	private Supplier<Product> createProducts(ProductRepository productsRepo, int numberOfItems) {
 		List<Product> products  = new ArrayList<>();
 		for (int i = 0; i < numberOfItems; i++) {
@@ -307,6 +396,11 @@ public class DataGenerator implements HasLogger {
 		};
 	}
 
+	/**
+	 * Generates a random product name using fillings and types.
+	 * 
+	 * @return Random product name
+	 */
 	private String getRandomProductName() {
 		String firstFilling = getRandom(FILLING);
 		String name;
@@ -325,21 +419,48 @@ public class DataGenerator implements HasLogger {
 		return name;
 	}
 
+	/**
+	 * Creates and saves a baker user.
+	 * 
+	 * @param userRepository   User repository
+	 * @param passwordEncoder  Password encoder
+	 * @return Baker user
+	 */
 	private User createBaker(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return userRepository.save(
 				createUser("baker@vaadin.com", "Heidi", "Carter", passwordEncoder.encode("baker"), Role.BAKER, false));
 	}
 
+	/**
+	 * Creates and saves a barista user.
+	 * 
+	 * @param userRepository   User repository
+	 * @param passwordEncoder  Password encoder
+	 * @return Barista user
+	 */
 	private User createBarista(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return userRepository.save(createUser("barista@vaadin.com", "Malin", "Castro",
 				passwordEncoder.encode("barista"), Role.BARISTA, true));
 	}
 
+	/**
+	 * Creates and saves an admin user.
+	 * 
+	 * @param userRepository   User repository
+	 * @param passwordEncoder  Password encoder
+	 * @return Admin user
+	 */
 	private User createAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return userRepository.save(
 				createUser("admin@vaadin.com", "Göran", "Rich", passwordEncoder.encode("admin"), Role.ADMIN, true));
 	}
 
+	/**
+	 * Creates and saves deletable users for demo purposes.
+	 * 
+	 * @param userRepository   User repository
+	 * @param passwordEncoder  Password encoder
+	 */
 	private void createDeletableUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		userRepository.save(
 				createUser("peter@vaadin.com", "Peter", "Bush", passwordEncoder.encode("peter"), Role.BARISTA, false));
@@ -347,6 +468,17 @@ public class DataGenerator implements HasLogger {
 				.save(createUser("mary@vaadin.com", "Mary", "Ocon", passwordEncoder.encode("mary"), Role.BAKER, true));
 	}
 
+	/**
+	 * Creates a new user entity.
+	 * 
+	 * @param email         User email
+	 * @param firstName     First name
+	 * @param lastName      Last name
+	 * @param passwordHash  Password hash
+	 * @param role          User role
+	 * @param locked        Whether user is locked
+	 * @return User entity
+	 */
 	private User createUser(String email, String firstName, String lastName, String passwordHash, String role,
 			boolean locked) {
 		User user = new User();
