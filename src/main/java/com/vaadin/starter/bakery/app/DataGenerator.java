@@ -455,18 +455,29 @@ public class DataGenerator implements HasLogger {
 				createUser("admin@vaadin.com", "Göran", "Rich", passwordEncoder.encode("admin"), Role.ADMIN, true));
 	}
 
-	/**
-	 * Creates and saves deletable users for demo purposes.
-	 * 
-	 * @param userRepository   User repository
-	 * @param passwordEncoder  Password encoder
-	 */
-	private void createDeletableUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-		userRepository.save(
-				createUser("peter@vaadin.com", "Peter", "Bush", passwordEncoder.encode("peter"), Role.BARISTA, false));
-		userRepository
-				.save(createUser("mary@vaadin.com", "Mary", "Ocon", passwordEncoder.encode("mary"), Role.BAKER, true));
-	}
+	    /**
+     * Creates and saves additional demo users in the database that can be safely deleted.
+     * <p>
+     * These users are intended only for testing/demo purposes, allowing developers
+     * or testers to try out user management features such as deletion, without
+     * impacting the essential default users (admin, baker, barista).
+     * </p>
+     *
+     * <ul>
+     *   <li><b>peter@vaadin.com</b> - Role: BARISTA</li>
+     *   <li><b>mary@vaadin.com</b> - Role: BAKER</li>
+     * </ul>
+     *
+     * @param userRepository   Repository for persisting User entities
+     * @param passwordEncoder  Password encoder to securely hash the user passwords
+     */
+    private void createDeletableUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        userRepository.save(
+                createUser("peter@vaadin.com", "Peter", "Bush", passwordEncoder.encode("peter"), Role.BARISTA, false));
+        userRepository
+                .save(createUser("mary@vaadin.com", "Mary", "Ocon", passwordEncoder.encode("mary"), Role.BAKER, true));
+    }
+
 
 	/**
 	 * Creates a new user entity.
