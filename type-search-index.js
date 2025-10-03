@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"com.vaadin.starter.bakery.backend.data.entity","l":"AbstractEntity"},{"l":"All Classes and Interfaces","u":"allclasses-index.html"}];updateSearchResults();
